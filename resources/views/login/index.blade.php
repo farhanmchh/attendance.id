@@ -32,9 +32,9 @@
               <div class="text-center mt-5">
                 <h1 class="h2">{{ $regards }}</h1>
 								@if (session('success'))
-                <p class="lead">{{ session('success') }}</p>
+                <div class="badge bg-info">{{ session('success') }}</div>
 								@else
-                <p class="lead text-danger">{{ session('error') }}</p>
+                <div class="badge bg-danger">{{ session('error') }}</div>
 								@endif
               </div>
 
@@ -55,7 +55,7 @@
                     </small> --}}
 										<div class="form-check">
 											<input class="form-check-input" type="checkbox" name="remember">
-											<label class="form-check-label">
+											<label class="form-check-label {{ $bg_card ? 'text-white' : 'text-dark' }}">
 												Remember me
 											</label>
 										</div>

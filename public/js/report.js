@@ -16,29 +16,7 @@ $('.date-time-picker').change(function() {
       $('.row-container').html('<tr><th colspan="3">No Data</th></tr>')
     }
 
-    let rowStack = ''
-    let presentTotal = 0
-    let permissionTotal = 0
-    let notPresentTotal = 0
-    let reportTotal = reports.length
-
-    reports.forEach((report, i) => {
-      rowStack += row(report, i)
-      $('.row-container').html(rowStack)
-
-      if (report.status == 'present') {
-        presentTotal += 1
-      } else if (report.status == 'permission') {
-        permissionTotal += 1
-      } else {
-        notPresentTotal += 1
-      }
-    })
-
-    $('.present-total').html(presentTotal)
-    $('.permission-total').html(permissionTotal)
-    $('.not-present-total').html(notPresentTotal)
-    $('.report-total').html(reportTotal)
+    getAttendanceReport(reports)
   })
 })
 
@@ -49,15 +27,19 @@ $.get(`/getAttendanceReport/${date.data('classroom_id')}/${date.data('value')}`,
     $('.row-container').html('<tr><th colspan="3">No Data</th></tr>')
   }
 
-  let rowStack = ''
+  getAttendanceReport(reports)
+})
+
+function getAttendanceReport(reports) {
+  let reportRowStack = ''
   let presentTotal = 0
   let permissionTotal = 0
   let notPresentTotal = 0
   let reportTotal = reports.length
 
   reports.forEach((report, i) => {
-    rowStack += row(report, i)
-    $('.row-container').html(rowStack)
+    reportRowStack += reportRow(report, i)
+    $('.row-container').html(reportRowStack)
 
     if (report.status == 'present') {
       presentTotal += 1
@@ -72,9 +54,9 @@ $.get(`/getAttendanceReport/${date.data('classroom_id')}/${date.data('value')}`,
   $('.permission-total').html(permissionTotal)
   $('.not-present-total').html(notPresentTotal)
   $('.report-total').html(reportTotal)
-})
+}
 
-function row(report, i) {
+function reportRow(report, i) {
   return `<tr>
             <td>${1 + i++}</td>
             <td>${report.student.name}</td>

@@ -23,13 +23,14 @@
     </a>
   </div>
 
-  <form action="/teacher/{{ $teacher->slug }}" method="POST">
-    @method('put')
-    @csrf
 
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-body">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <form action="/teacher/{{ $teacher->slug }}" method="POST">
+          @method('put')
+          @csrf
+
           <div class="mb-3">
             <label for="" class="form-label fw-bolder">Name</label>
             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
@@ -141,20 +142,22 @@
               <button type="submit" class="btn btn-primary">
                 <i class="fas fa-paper-plane"></i> Update
               </button>
-  </form>
-  </div>
-  <div class="col-sm-2 d-grid mb-2">
-    <form action="/teacher/{{ $teacher->slug }}" method="POST">
-      @method('delete')
-      @csrf
-      <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">
-        <i class="fas fa-trash"></i>
-      </button>
-    </form>
-  </div>
-  </div>
-  </div>
-  </div>
+            </div>
+            <div class="col-sm-2 d-grid mb-2">
+              <form action="/teacher/{{ $teacher->slug }}" method="POST">
+                @method('delete')
+                @csrf
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
   </div>
 
 @endsection

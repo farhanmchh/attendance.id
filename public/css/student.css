@@ -1,0 +1,11 @@
+@media screen and (max-width: 575px) {
+  .student-nis, .student-action {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .student-class {
+    display: none;
+  }
+}

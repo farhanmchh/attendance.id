@@ -3,7 +3,13 @@
 @section('content')
 
 <h1 class="h3 mb-2">
-  <strong>Student</strong> list ({{ $students->count() }})
+  <span>
+    <a href="/student" class="text-decoration-none text-dark">
+      <strong>Student</strong> list
+      <span class="student-header">{{ $class_name ? $students[0]->classroom->name : '' }}</span>
+      (<span class="student-total" title="student total">{{ $count }}</span>)
+    </a>
+  </span>
 </h1>
 
 @if (session('success'))
@@ -18,10 +24,20 @@
   </h4>
 @endif
 
-<div class="mb-2">
-  <a href="/student/create" class="btn btn-primary btn-sm">
-    <i class="fas fa-plus"></i>
-  </a>
+<div class="row justify-content-between">
+  <div class="col-sm-3 mb-2">
+    <a href="/student/create" class="btn btn-primary btn-sm" title="add student">
+      <i class="fas fa-plus"></i>
+    </a>
+  </div>
+  <div class="col-sm-3 mb-2">
+    <select name="filter_student" id="" class="filter-student form-select form-select-sm text-center" title="filter student by class name">
+      <option></option>
+      @foreach ($classes as $class)
+        <option value="{{ $class->slug }}" @if(request('filter')==$class->slug) selected @endif>{{ $class->name }}</option>
+      @endforeach
+    </select>
+  </div>
 </div>
 
 <div class="table-responsive">
@@ -30,17 +46,16 @@
       <tr>
         <th>No</th>
         <th>Name</th>
-        <th>NIS</th>
-        <th>Class</th>
-        <th>Action</th>
+        <th class="student-nis">NIS</th>
+        <th class="student-class">Class</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody class="student-row-container">
       @foreach ($students as $student)
         <tr>
           <td>
             <a href="/student/{{ $student->slug }}/edit" class="text-decoration-none text-dark">
-              {{ $loop->iteration }}
+              {{ $loop->iteration + $numbering }}
             </a>
           </td>
           <td>
@@ -48,29 +63,26 @@
               {{ $student->name }}
             </a>
           </td>
-          <td>
+          <td class="student-nis">
             <a href="/student/{{ $student->slug }}/edit" class="text-decoration-none text-dark">
-              {{ $student->nisn }}
+              {{ $student->nis }}
             </a>
           </td>
-          <td>
+          <td class="student-class">
             <a href="/classroom/{{ $student->classroom->slug }}/edit" class="text-decoration-none text-dark">
               {{ $student->classroom->name }}
             </a>
-          </td>
-          <td>
-            <form action="/student/{{ $student->slug }}" method="POST">
-              @method('DELETE')
-              @csrf
-              <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
-                <i class="fas fa-trash"></i>
-              </button>
-            </form>
           </td>
         </tr>
       @endforeach
     </tbody>
   </table>
 </div>
+
+@if (!request('filter'))
+<div class="student-pagination d-flex justify-content-center">
+    {{ $students->withQueryString()->links() }}
+  </div>
+@endif
 
 @endsection

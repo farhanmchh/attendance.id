@@ -18,7 +18,7 @@
 @endif
 
 <div class="mb-2">
-  <a href="/classroom/create" class="btn btn-primary btn-sm">
+  <a href="/classroom/create" class="btn btn-primary btn-sm" title="add class">
     <i class="fas fa-plus"></i>
   </a>
 </div>
@@ -27,10 +27,10 @@
   @foreach ($classes as $class)
     <div class="col-sm-3 text-center">
       <a href="/classroom/{{ $class->slug }}/edit" class="text-decoration-none">
-        <div class="card">
+        <div class="card" title="{{ $class->name }}">
           <div class="card-body">
             <h5 class="card-title">{{ $class->name }}</h5>
-            <small class="text-muted">{{ $class->teacher->name ?? '...' }}</small>
+            <small class="text-muted" title="{{ $class->teacher->name ?? '...' }}">{{ $class->teacher->name ?? '...' }}</small>
           </div>
         </div>
       </a>

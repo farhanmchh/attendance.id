@@ -22,6 +22,8 @@ class CreateTeachersTable extends Migration
             $table->text('address')->nullable();
             $table->boolean('account')->nullable();
             $table->string('classroom_id')->nullable();
+            $table->timestamp('sign_in')->nullable();
+            $table->timestamp('sign_out')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

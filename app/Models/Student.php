@@ -16,6 +16,15 @@ class Student extends Model
   protected $guarded = ['id'];
   protected $table = 'students';
 
+  public function scopeFilter($query, array $filters)
+  {
+    $query->when($filters['filter'] ?? false, function($query, $filter) {
+      $query->whereHas('classroom', fn($query) =>
+        $query->where('slug', $filter)
+      );
+    });
+  }
+
   public function classroom()
   {
     return $this->belongsTo(Classroom::class);

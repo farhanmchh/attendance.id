@@ -4,6 +4,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
@@ -39,6 +40,12 @@ Route::get('/teacher/release/{slug}', [TeacherController::class, 'release'])->mi
 
 // Student
 Route::resource('student', StudentController::class)->middleware('auth');
+Route::get('/filtering_student/{slug}', [StudentController::class, 'filteringStudent'])->middleware('auth');
+Route::get('/export_student', [StudentController::class, 'exportStudent'])->middleware('auth');
+Route::get('/import_student', [StudentController::class, 'importStudent'])->middleware('auth');
+
+// Log
+Route::get('/log', [LogController::class, 'index'])->middleware('auth');
 
 // Attendence
 Route::resource('attendance', AttendanceController::class)->middleware('auth');
