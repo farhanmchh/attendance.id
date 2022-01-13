@@ -8,6 +8,9 @@ use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use \Cviebrock\EloquentSluggable\Services\SlugService;
+use App\Exports\StudentExport;
+use App\Imports\ImportStudent;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
 {
@@ -16,14 +19,40 @@ class StudentController extends Controller
    *
    * @return \Illuminate\Http\Response
    */
-  private $title = 'Student';
+  private $title = 'Student',
+    $role  = 'master';
 
   public function index()
   {
-    return view('admin.student.index', [
-      'title' => $this->title,
-      'students' => Student::with('classroom')->orderBy('name', 'asc')->get()
-    ]);
+    if (auth()->user()->role == $this->role) {
+
+      if (request('filter')) {
+        $students = Student::with('classroom')->filter(request(['filter']))->orderBy('name', 'asc');
+        $count = $students->count();
+        $students = $students->get();
+        $class_name = 1;
+
+        $numbering = 0;
+      } else if (!request('filter') || request('filter') == '') {
+        $students = Student::with('classroom')->orderBy('name', 'asc');
+        $count = $students->count();
+        $students = $students->paginate(7);
+        $class_name = 0;
+
+        $numbering = (($students->currentPage() - 1) * $students->perPage());
+      }
+
+      return view('admin.student.index', [
+        'title' => $this->title,
+        'count' => $count,
+        'classes' => Classroom::orderBy('name', 'asc')->get(),
+        'class_name' => $class_name,
+        'numbering' => $numbering,
+        'students' => $students
+      ]);
+    } else {
+      return back();
+    }
   }
 
   /**
@@ -33,10 +62,14 @@ class StudentController extends Controller
    */
   public function create()
   {
-    return view('admin.student.create', [
-      'title' => $this->title,
-      'classes' => Classroom::orderBy('name', 'asc')->get()
-    ]);
+    if (auth()->user()->role == $this->role) {
+      return view('admin.student.create', [
+        'title' => $this->title,
+        'classes' => Classroom::orderBy('name', 'asc')->get()
+      ]);
+    } else {
+      return back();
+    }
   }
 
   /**
@@ -49,11 +82,12 @@ class StudentController extends Controller
   {
     $student = $request->validate([
       'name' => ['required', 'max:255'],
-      'nisn' => ['required', 'numeric', 'unique:students,nisn'],
+      'nis' => ['required', 'numeric', 'unique:students,nis'],
       'classroom_id' => ['required'],
       'address' => ['required']
     ]);
     $student['slug'] = SlugService::createSlug(Student::class, 'slug', $request->name);
+    $student['name'] = Str::title($request->name);
 
     Student::create($student);
 
@@ -79,11 +113,15 @@ class StudentController extends Controller
    */
   public function edit($slug)
   {
-    return view('admin.student.edit', [
-      'title' => $this->title,
-      'classes' => Classroom::orderBy('name', 'asc')->get(),
-      'student' => Student::where('slug', $slug)->first()
-    ]);
+    if (auth()->user()->role == $this->role) {
+      return view('admin.student.edit', [
+        'title' => $this->title,
+        'classes' => Classroom::orderBy('name', 'asc')->get(),
+        'student' => Student::where('slug', $slug)->first()
+      ]);
+    } else {
+      return back();
+    }
   }
 
   /**
@@ -95,22 +133,28 @@ class StudentController extends Controller
    */
   public function update(Request $request, $slug)
   {
-    $student = Student::where('slug', $slug)->first();
-    $student->delete();
-    
+    // return response()->json('ok');
     $studentData = $request->validate([
       'name' => ['required', 'max:255'],
-      'nisn' => ['required', 'numeric', 'unique:students,nisn'],
+      'nis' => ['required', 'numeric'],
       'classroom_id' => ['required'],
       'address' => ['required']
     ]);
-    $studentData['slug'] = Str::slug($request->name);
-    
-    Student::create($studentData);
+    $studentData['slug'] = SlugService::createSlug(Student::class, 'slug', $request->name);
+
+    $check_students = Student::where('slug', '!=', $slug)->get();
+
+    foreach ($check_students as $check_student) {
+      if ($check_student->nis == $request->nis) {
+        return redirect("/student/$slug/edit")->with('error_nisn', 'NIS has been taken')->withInput();
+      }
+    }
+
+    Student::where('slug', $slug)->update($studentData);
 
     return redirect('/student')->with('success', "{$request->name} successfully updated!");
   }
-  
+
   /**
    * Remove the specified resource from storage.
    *
@@ -119,8 +163,37 @@ class StudentController extends Controller
    */
   public function destroy($slug)
   {
-    $student = Student::where('slug', $slug)->first();
-    Student::where('slug', $slug)->delete();
-    return back()->with('success', "{$student->name} successfully deleted!");
+    if (auth()->user()->role == $this->role) {
+      $student = Student::where('slug', $slug)->first();
+      Student::where('slug', $slug)->delete();
+      return redirect('/student')->with('success', "{$student->name} successfully deleted!");
+    } else {
+      return back();
+    }
+  }
+
+  public function filteringStudent($slug)
+  {
+    $classroom = Classroom::where('slug', $slug)->first();
+    $students = Student::where('classroom_id', $classroom->id)
+      ->orderBy('name', 'asc')
+      ->get()
+      ->load('classroom');
+
+    return $students;
+  }
+
+  public function exportStudent()
+  {
+    return Excel::download(new StudentExport, 'student-template.xlsx');
+  }
+
+  public function importStudent(Request $request)
+  {
+    // Excel::import(new StudentExport, 'import-student.xlsx');
+
+    // return back();
+    $array = Excel::toArray(new ImportStudent, $request->file('importFile'));
+    return response()->json($array);
   }
 }

@@ -33,6 +33,16 @@
             <i class="fas fa-users align-middle"></i> <span class="align-middle">Students</span>
           </a>
         </li>
+        
+        <li class="sidebar-header">
+          Log
+        </li>
+
+        <li class="sidebar-item {{ Request::is('log*') ? 'active' : '' }}">
+          <a class="sidebar-link" href="/log">
+            <i class="fas fa-life-ring align-middle"></i> <span class="align-middle">Log Activity</span>
+          </a>
+        </li>
       </ul>
     {{-- END SIDEBAR FOR MASTER --}}
 
@@ -41,12 +51,12 @@
     {{-- SIDEBAR FOR TEACHER --}}
       <ul class="sidebar-nav">
         <li class="sidebar-header">
-          Daily
+          Attendance
         </li>
         
         <li class="sidebar-item {{ Request::is('attendance*') ? 'active' : '' }}">
           <a class="sidebar-link" href="/attendance">
-            <i class="fas fa-home align-middle"></i> <span class="align-middle">Home</span>
+            <i class="fas fa-calendar-day align-middle"></i> <span class="align-middle">Attendance</span>
           </a>
         </li>
         <li class="sidebar-item {{ Request::is('report*') ? 'active' : '' }}">

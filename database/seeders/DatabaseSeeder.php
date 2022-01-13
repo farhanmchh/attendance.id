@@ -45,20 +45,5 @@ class DatabaseSeeder extends Seeder
       'slug' => 'xii-rpl-1',
       'teacher_id' => '1'
     ]);
-
-    Student::create([
-      'name' => 'Ahmad Syamsuddin',
-      'slug' => 'ahmad-syamsuddin',
-      'nisn' => '1019009091',
-      'classroom_id' => '1',
-      'address' => 'bogor'
-    ]);
-    Student::create([
-      'name' => 'Zaky Febryan',
-      'slug' => 'zaky-febryan',
-      'nisn' => '1019009034',
-      'classroom_id' => '1',
-      'address' => 'bojong'
-    ]);
   }
 }

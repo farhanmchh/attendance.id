@@ -12,7 +12,7 @@
   </a>
 </div>
 
-<form action="/student" method="POST">
+<form action="/student" method="POST" enctype="multipart/form-data">
   @csrf
 
   <div class="col-md-6">
@@ -28,9 +28,9 @@
           @enderror
         </div>
         <div class="mb-3">
-          <label for="" class="form-label fw-bolder">NISN</label>
-          <input type="text" name="nisn" class="form-control @error('nisn') is-invalid @enderror" value="{{ old('nisn') }}">
-          @error('nisn')
+          <label for="" class="form-label fw-bolder">NIS</label>
+          <input type="text" name="nis" class="form-control @error('nis') is-invalid @enderror" value="{{ old('nis') }}">
+          @error('nis')
             <div class="invalid-feedback">
               {{ $message }}
             </div>
@@ -62,6 +62,10 @@
               {{ $message }}
             </div>
           @enderror
+        </div>
+
+        <div class="mb-3">
+          <input type="file" name="importFile" class="form-control">
         </div>
 
         <div class="d-grid">

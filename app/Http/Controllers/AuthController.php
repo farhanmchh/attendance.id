@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use App\Models\Teacher;
 use Carbon\Carbon;
 
 class AuthController extends Controller
@@ -23,20 +23,27 @@ class AuthController extends Controller
       // $subRegards = "Have a good rest :)";
     }
 
-    if ($day == 'Sunday') {
-      $regards = "Happy {$day}!";
-    } else if ($day == 'Monday') {
-      $regards = "Cheers for {$day}!";
-    } else if ($day == 'Tuesday') {
-      $regards = "Sweet smile for {$day}!";
-    } else if ($day == 'Wednesday') {
-      $regards = "An excelent {$day}";
-    } else if ($day == 'Thursday') {
-      $regards = "Have a sunny {$day}!";
-    } else if ($day == 'Friday') {
-      $regards = "Have a blessed {$day}!";
-    } else {
-      $regards = "Sweet {$day}!";
+    switch ($day) {
+      case 'Sunday':
+        $regards = "Happy {$day}!";
+        break;
+      case 'Monday':
+        $regards = "Cheers for {$day}!";
+        break;
+      case 'Tuesday':
+        $regards = "Sweet smile for {$day}!";
+        break;
+      case 'Wednesday':
+        $regards = "An excelent {$day}";
+        break;
+      case 'Thursday':
+        $regards = "Have a sunny {$day}!";
+        break;
+      case 'Friday':
+        $regards = "Have a blessed {$day}!";
+        break;
+      default:
+        $regards = "Sweet {$day}!";
     }
 
     return view('login.index', [
@@ -51,14 +58,17 @@ class AuthController extends Controller
   public function authenticate(Request $request)
   {
     $user = $request->validate([
-      'email'=> ['required'],
+      'email' => ['required'],
       'password' => ['required']
     ]);
 
     $request->remember ? $remember = true : $remember = false;
-    
+
     if (Auth::attempt($user, $remember)) {
       $request->session()->regenerate();
+
+      Teacher::where('email', $request->email)
+        ->update(['sign_in' => Carbon::now()->format('Y-m-d H:i:s'), 'sign_out' => NULL]);
 
       if (auth()->user()->role == 'master') {
         return redirect('/dashboard');
@@ -69,9 +79,12 @@ class AuthController extends Controller
 
     return back()->with('error', 'Error log-in!');
   }
-  
+
   public function logout(Request $request)
   {
+    Teacher::where('email', auth()->user()->email)
+      ->update(['sign_in' => NULL, 'sign_out' => Carbon::now()->format('Y-m-d H:i:s')]);
+
     Auth::logout();
 
     $request->session()->invalidate();

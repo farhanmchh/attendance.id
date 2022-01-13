@@ -22,7 +22,7 @@ class Classroom extends Model
 
   public function student()
   {
-    return $this->hasMany(Student::class);
+    return $this->hasMany(Student::class)->orderBy('name', 'asc');
   }
 
   public function getRouteKeyName()

@@ -12,9 +12,10 @@
   }
 </style>
 <body>
-  <h6>Email : $data->email</h6>
-  <h6>Password : $data->password</h6>
 
-  <p>Use this for access attendance.id by mch</p>
+  <p style="font-size: 1rem">Email : {{ $data['email'] }}</p>
+  <p style="font-size: 1rem">Password : {{ $data['password'] }}</p>
+
+  <p>Use this for access <strong>attendance.id</strong> attendances management system</p>
 </body>
 </html>

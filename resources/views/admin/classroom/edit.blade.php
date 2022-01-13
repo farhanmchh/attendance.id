@@ -43,7 +43,7 @@
             @if (!$class->teacher_id)
             <small class="text-danger">This class doesn't have a teacher yet</small>
             @else
-            <small class="text-success">Edit teacher for this class</small>
+            <small class="text-success">Change teacher for this class</small>
             @endif
             <input type="hidden" name="old_teacher_id" value="{{ $class->teacher->id ?? '' }}">
             <select name="teacher_id" class="form-select">
@@ -66,6 +66,11 @@
     <div class="col-md-7">
       <div class="card">
         <span class="position-absolute top-0 start-100 translate-middle p-2 badge border border-2 border-white rounded-pill bg-secondary">{{ $class->student->count() }}</span>
+        <div class="card-header">
+          {{-- <span class="btn btn-info btn-sm" data-href="/export_csv_student" onclick="exportCsvStudent(event.target)">Generate Template</span> --}}
+          <a href="/export_student" class="btn btn-primary btn-sm">Export Template</a>
+          <a href="/import_student" class="btn btn-info btn-sm">Import Student</a>
+        </div>
         <div class="card-body">
           <div class="table-responsive">
             <table class="table table-sm text-center">

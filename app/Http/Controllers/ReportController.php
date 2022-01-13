@@ -15,15 +15,22 @@ class ReportController extends Controller
    *
    * @return \Illuminate\Http\Response
    */
+
+  private $title = 'Report',
+          $role  = 'teacher';
   public function index()
   {
     $teacher = Teacher::where('email', auth()->user()->email)->first();
 
-    return view('user.report.index', [
-      'title' => 'Report',
-      'teacher' => $teacher,
-      'student' => Student::where('classroom_id', $teacher->classroom_id)
-    ]);
+    if (auth()->user()->role == $this->role) {
+      return view('user.report.index', [
+        'title' => $this->title,
+        'teacher' => $teacher,
+        'student' => Student::where('classroom_id', $teacher->classroom_id)
+      ]);
+    } else {
+      return back();
+    }
   }
 
   /**
@@ -94,12 +101,16 @@ class ReportController extends Controller
 
   public function getAttendanceReport($classroom_id, $date)
   {
-    $reports = Attendance::where('classroom_id', $classroom_id)->whereDate('created_at', $date)->get();
-    
-    foreach ($reports as $key => $report) {
-      $reports[$key]->student = $report->student;
+    if (auth()->user()->role == $this->role) {
+      $reports = Attendance::where('classroom_id', $classroom_id)->whereDate('created_at', $date)->get();
+      
+      foreach ($reports as $key => $report) {
+        $reports[$key]->student = $report->student;
+      }
+  
+      return $reports;
+    } else {
+      return back();
     }
-
-    return $reports;
   }
 }

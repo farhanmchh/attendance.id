@@ -22,7 +22,9 @@
           <div class="dropdown-divider"></div>
           <form action="/logout" method="POST">
             @csrf
-            <button type="submit" class="dropdown-item">Log out</button>
+            <button type="submit" class="dropdown-item">
+              <i class="fas fa-sign-out-alt"></i> Log-out
+            </button>
           </form>
           {{-- <a class="dropdown-item" href="#">Log out</a> --}}
         </div>

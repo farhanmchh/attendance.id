@@ -7,7 +7,7 @@
 </h1>
 
 <h4 class="mb-2">
-  <div class="badge bg-success">{{ $regards }}</div>
+  <div class="badge" style="background-color: {{ $badge_bg ?? '#1cbb8c' }}">{{ $regards }}</div>
 </h4>
 
 @endsection

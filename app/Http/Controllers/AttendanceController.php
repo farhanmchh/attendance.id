@@ -15,6 +15,10 @@ class AttendanceController extends Controller
    *
    * @return \Illuminate\Http\Response
    */
+
+  private $title = 'Attendance',
+          $role  = 'teacher';
+
   public function index()
   {
     $teacher = Teacher::where('email', auth()->user()->email)->first();
@@ -22,26 +26,34 @@ class AttendanceController extends Controller
     
     $today = Carbon::now()->format('l');
 
+    // Clear all absent for a new day
     foreach ($students as $student) {
       $last_absent = Carbon::parse($student->absent_at)->format('l');
+      
       if ($last_absent != $today) {
         $student->absent_at = NULL;
         $student->absent_status = NULL;
         $student->save();
       }
     }
-
-    if ($today == 'Saturday' || $today == 'Monday') {
-      $weekend = true;
+    // End Clear all absent for a new day
+    
+    $weekend = NULL;
+    if ($today == 'Saturday' || $today == 'Sunday') {
+      $weekend = $today;
     }
     
-    return view('user.attendance.index', [
-      'title' => 'Attendance',
-      'teacher' => $teacher,
-      'weekend' => $weekend,
-      'today_attendance' => Attendance::where('classroom_id', $teacher->classroom_id)->whereDate('created_at', date('Y-m-d'))->get(),
-      'students' => Student::where('classroom_id', $teacher->classroom_id)->orderBy('name', 'asc')->get()
-    ]);
+    if (auth()->user()->role == $this->role) {
+      return view('user.attendance.index', [
+        'title' => $this->title,
+        'teacher' => $teacher,
+        'weekend' => $weekend,
+        'today_attendance' => Attendance::where('classroom_id', $teacher->classroom_id)->whereDate('created_at', date('Y-m-d'))->get(),
+        'students' => Student::where('classroom_id', $teacher->classroom_id)->orderBy('name', 'asc')->get()
+      ]);
+    } else {
+      return back();
+    }
   }
 
   /**
